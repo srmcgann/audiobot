@@ -47,19 +47,19 @@ function cowsay(msg, chan){
   exec(shellescape(('cowsay ' + str).split(' ')), (error, stdout, stderr) => {
     maxd=-6e6
     let out = stdout.split("\n").map(v=>{
-			v = '  ' + v + '  '
+      v = '  ' + v + '  '
       if(v && v.length>maxd) maxd=v.length
-		  return v
+      return v
     })
     out=out.map(v=>{
-	  	tc=0
-		  while(v.length<maxd && tc<1000){
+      tc=0
+      while(v.length<maxd && tc<1000){
         tc++
-			  v=v+' '
+        v=v+' '
       }
-			return v
+      return v
     })
-		out=out.join("\n")
+    out=out.join("\n")
     chan.send("...\n`"+out+"`")
   })
 }
@@ -76,17 +76,17 @@ client.on("messageCreate", async (message) => {
   if(msg.indexOf('.') == 0) dotCommand = msg.split('.')[1].toLowerCase().split(' ')[0]
 
   if(
-		dotCommand == 'wavevid' ||
-		dotCommand == 'wavepic' ||
+    dotCommand == 'wavevid' ||
+    dotCommand == 'wavepic' ||
     dotCommand == 'ascii' ||
     dotCommand == 'matrix' ||
-		dotCommand == 'scanlines' ||
+    dotCommand == 'scanlines' ||
     dotCommand == 'cowsay' ||
     dotCommand == 'twirl' ||
-		dotCommand == 'efx' ||
-		dotCommand == 'vignette'){
+    dotCommand == 'efx' ||
+    dotCommand == 'vignette'){
     turl = msg.split(' ').length && msg.split(' '). length > 1 ? msg.split(' ')[1] : ''
-		switch(dotCommand){
+    switch(dotCommand){
       case 'wavevid':
         makeShortLink('https://efx.dweet.net/' + turl + (msg.indexOf('?')==-1 ? '?' : '&') + 'wavey', message, " <- wavy version :D")
       break
@@ -141,7 +141,7 @@ client.on("messageCreate", async (message) => {
         message.channel.send(img);
       }
     })
-	}
+  }
 
   if(dotCommand == 'quiz'){
     const quiz = require('./quiz.json');
@@ -166,7 +166,7 @@ client.on("messageCreate", async (message) => {
               }
               if(stdout){
                 score = stdout
-								message.channel.send(`${collected.first().author} got the correct answer!\n${collected.first().author} score: ${score}`);
+                message.channel.send(`${collected.first().author} got the correct answer!\n${collected.first().author} score: ${score}`);
               }
             })
           })
@@ -188,11 +188,11 @@ client.on("messageCreate", async (message) => {
   if((msg.toLowerCase()).indexOf(l='https://www.youtube.com')!==-1
     || (msg.toLowerCase().indexOf(l='https://youtu.be')!==-1
   )){
-		let sendData = {playlist: chan}
+    let sendData = {playlist: chan}
     const response = await fetch('https://audiobot.dweet.net/create.php', {
-    	method: 'post',
-    	body: JSON.stringify(sendData),
-    	headers: {'Content-Type': 'application/json'}
+      method: 'post',
+      body: JSON.stringify(sendData),
+      headers: {'Content-Type': 'application/json'}
     });
     const data = await response.json();
     if(data[0]){
@@ -261,13 +261,13 @@ client.on('interactionCreate', async interaction => {
   if(!interaction.isCommand()) return;
   const { commandName } = interaction;
 
-	if (commandName === 'ping') {
-		await interaction.reply('Pong!');
-	} else if (commandName === 'server') {
-		await interaction.reply('Server info.');
-	} else if (commandName === 'user') {
-		await interaction.reply('User info.');
-	} else if (commandName === 'quiz') {
+  if (commandName === 'ping') {
+    await interaction.reply('Pong!');
+  } else if (commandName === 'server') {
+    await interaction.reply('Server info.');
+  } else if (commandName === 'user') {
+    await interaction.reply('User info.');
+  } else if (commandName === 'quiz') {
     const quiz = require('./quiz.json');
     const item = quiz[Math.floor(Math.random() * quiz.length)];
     const filter = response => {
@@ -278,7 +278,7 @@ client.on('interactionCreate', async interaction => {
       .then(() => {
         interaction.channel.awaitMessages({ filter, max: 1, time: 30000, errors: ['time'] })
           .then(collected => {
-						score = 0
+            score = 0
             exec(`php quiz.php '${collected.first().author}'` , (error, stdout, stderr) => {
               if (error) {
                 console.log(`error: ${error.message}`)
@@ -292,7 +292,7 @@ client.on('interactionCreate', async interaction => {
                 score = stdout
                 interaction.followUp(`${collected.first().author} got the correct answer!\n${collected.first().author} score: ${score}`);
               }
-      			})
+            })
             //interaction.followUp(`${collected.first().author} got the correct answer!\n${collected.first().author} score: ${score}`);
           })
           .catch(collected => {
