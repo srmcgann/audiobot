@@ -21,7 +21,7 @@
     $duration = explode(':', (str_replace("\n", '', shell_exec($cmd))));
     switch(sizeof($duration)){
       case 0: die(); break;
-			case 1: $hours=0; $minutes=0; $seconds=$duration[0]; break;
+      case 1: $hours=0; $minutes=0; $seconds=$duration[0]; break;
       case 2: $hours=0; $minutes=$duration[0]; $seconds=$duration[1]; break;
       case 3: $hours=$duration[0]; $minutes=$duration[1]; $seconds=$duration[2]; break;
     }
