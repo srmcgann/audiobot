@@ -2,7 +2,6 @@
 const { Client, Intents, Permissions } = require('discord.js');
 const { token } = require('./config.json');
 const { exec } = require('child_process');
-var shellescape = require('shell-escape');
 //const { fetch } = require('node-fetch@2');
 const fetch = (...args) => import('node-fetch').then(({default: fetch}) => fetch(...args));
 
@@ -42,27 +41,6 @@ makeShortLink=(url, message, extraText)=>{
   })
 }
 
-function cowsay(msg, chan){
-  let str = msg.substring(8)
-  exec(shellescape(('cowsay ' + str).split(' ')), (error, stdout, stderr) => {
-    maxd=-6e6
-    let out = stdout.split("\n").map(v=>{
-			v = '  ' + v + '  '
-      if(v && v.length>maxd) maxd=v.length
-		  return v
-    })
-    out=out.map(v=>{
-	  	tc=0
-		  while(v.length<maxd && tc<1000){
-        tc++
-			  v=v+' '
-      }
-			return v
-    })
-		out=out.join("\n")
-    chan.send("...\n`"+out+"`")
-  })
-}
 
 client.on("messageCreate", async (message) => {
   if(message.author.username=='audiobot') return
@@ -78,11 +56,8 @@ client.on("messageCreate", async (message) => {
   if(
 		dotCommand == 'wavevid' ||
 		dotCommand == 'wavepic' ||
-    dotCommand == 'ascii' ||
-    dotCommand == 'matrix' ||
+		dotCommand == 'matrix' ||
 		dotCommand == 'scanlines' ||
-    dotCommand == 'cowsay' ||
-    dotCommand == 'twirl' ||
 		dotCommand == 'efx' ||
 		dotCommand == 'vignette'){
     turl = msg.split(' ').length && msg.split(' '). length > 1 ? msg.split(' ')[1] : ''
@@ -93,17 +68,8 @@ client.on("messageCreate", async (message) => {
       case 'wavepic':
         makeShortLink('https://efx.dweet.net/' + turl + (msg.indexOf('?')==-1 ? '?' : '&') + 'wavey', message, " <- wavy version :D")
       break
-      case 'cowsay':
-        cowsay(msg, message.channel)
-      break
       case 'vignette':
         makeShortLink('https://efx.dweet.net/' + turl + (msg.indexOf('?')==-1 ? '?' : '&') + 'vignette', message, " <- vignette")
-      break
-      case 'ascii':
-        makeShortLink('https://ascii.dweet.net/' + turl, message, " <- ascii-ified")
-      break
-      case 'twirl':
-        makeShortLink('https://efx.dweet.net/' + turl + (msg.indexOf('?')==-1 ? '?' : '&') + 'twirl', message, " <- twirl")
       break
       case 'scanlines':
         makeShortLink('https://efx.dweet.net/' + turl + (msg.indexOf('?')==-1 ? '?' : '&') + 'scanlines', message, " <- scanlines")
