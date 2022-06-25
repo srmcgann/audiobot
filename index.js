@@ -42,6 +42,38 @@ makeShortLink=(url, message, extraText)=>{
   })
 }
 
+async function imgToAscii(img, chan){
+  let ret = []
+  await exec(shellescape(('php getImageSize.php ' + img).split(' ')), async (error, stdout, stderr) => {
+    await stdout.split("\n").map(async function (v){
+      if(v.length>3){
+        let dimensions=JSON.parse(v)
+        let width = Math.max(1920, dimensions['0'])
+        let height = width / (dimensions['0'] / dimensions['1'])
+        let sendData = {
+          img,
+          delay: 2000,
+          width,
+          height
+        }
+        const response = await fetch('https://audiobot.dweet.net/imgToAscii.php', {
+          method: 'post',
+          body: JSON.stringify(sendData),
+          headers: {'Content-Type': 'application/json'}
+        });
+        const data = await response.json();
+        //console.log(data)
+        if(data[0]){
+          //console.log(data[1])
+          makeShortLink(data[1], chan, " <- ascii")
+        }else{
+          //console.log('fail'+"\n")
+        }
+      }
+    })
+  })
+}
+
 function cowsay(msg, chan){
   let str = msg.substring(8)
   exec(shellescape(('cowsay ' + str).split(' ')), (error, stdout, stderr) => {
@@ -100,7 +132,7 @@ client.on("messageCreate", async (message) => {
         makeShortLink('https://efx.dweet.net/' + turl + (msg.indexOf('?')==-1 ? '?' : '&') + 'vignette', message, " <- vignette")
       break
       case 'ascii':
-        makeShortLink('https://ascii.dweet.net/' + turl, message, " <- ascii-ified")
+        imgToAscii(turl, message)
       break
       case 'twirl':
         makeShortLink('https://efx.dweet.net/' + turl + (msg.indexOf('?')==-1 ? '?' : '&') + 'twirl', message, " <- twirl")
