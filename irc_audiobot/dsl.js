@@ -390,7 +390,6 @@ function Connect(port) {
                                   if(
                                     dotCommand == 'wavevid' ||
                                     dotCommand == 'wavepic' ||
-                                    dotCommand == 'wordle' ||
                                     dotCommand == 'matrix' ||
                                     dotCommand == 'wavey' ||
                                     dotCommand == 'twirl' ||
@@ -399,6 +398,7 @@ function Connect(port) {
                                     dotCommand == 'demo' ||
                                     dotCommand == 'hint' ||
                                     dotCommand == 'd' ||
+                                    dotCommand == 'shim' ||
                                     dotCommand == 'play' ||
                                     dotCommand == 'superimpose' ||
                                     dotCommand == 'emphasize' ||
@@ -409,12 +409,6 @@ function Connect(port) {
                                     dotCommand == 'vignette'){
                                     let turl = txtmsg.split(' ').length && txtmsg.split(' '). length > 1 ? txtmsg.split(' ')[1] : ''
                                     switch(dotCommand){
-                                      case 'wordle':
-                                        let params = txtmsg.toLowerCase().split(' ').filter(v=>v)
-                                        let knownLetters = params[1]
-                                        let placement = params[2]
-                                        return
-                                      break
                                       case 'cowsay':
                                         cowsay(txtmsg, chan)
                                         return
@@ -437,6 +431,10 @@ function Connect(port) {
                                       break
                                       case 'hint':
                                         wordmash('.scramble hint', chan, chatter)
+                                        return
+                                      break
+                                      case 'shim':
+                                        serverRaw('PRIVMSG ' + chan + ' :https://jsbot.cantelope.org/uploads/1sZpDV.jpg' + "\r\n")
                                         return
                                       break
                                       case 'wavepic':

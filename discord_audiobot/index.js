@@ -309,6 +309,7 @@ client.on("messageCreate", async (message) => {
   if(
     dotCommand == 'wavevid' ||
     dotCommand == 'wavepic' ||
+    dotCommand == 'wavey' ||
     dotCommand == 'ascii' ||
     dotCommand == 'matrix' ||
     dotCommand == 'scanlines' ||
@@ -327,6 +328,9 @@ client.on("messageCreate", async (message) => {
     dotCommand == 'vignette'){
     turl = msg.split(' ').length && msg.split(' '). length > 1 ? msg.split(' ')[1] : ''
     switch(dotCommand){
+      case 'wavey':
+        makeShortLink('https://efx.dweet.net/' + turl + (msg.indexOf('?')==-1 ? '?' : '&') + 'wavey', message, " <- wavy version :D")
+      break
       case 'wavevid':
         makeShortLink('https://efx.dweet.net/' + turl + (msg.indexOf('?')==-1 ? '?' : '&') + 'wavey', message, " <- wavy version :D")
       break
