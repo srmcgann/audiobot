@@ -1,0 +1,12 @@
+{
+  "engines": {
+    "node": ">=12"
+  },
+  "dependencies": {
+    "html-metadata-parser": "^1.0.4",
+    "node-fetch": "^3.2.4",
+    "parse-link": "^1.0.3",
+    "sandbox": "^0.8.6",
+    "shell-escape": "^0.2.0"
+  }
+}
