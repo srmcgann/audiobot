@@ -41,6 +41,15 @@ function applyMany(context, applied) {
     });
 }
 
+function whr(msg, chan){
+  let str = msg.substring(5)
+  exec(shellescape(('php whr.php ' + str).split(' ')), (error, stdout, stderr) => {
+    stdout.split("\n").map(v=>{
+      if(v.length>3) serverRaw('PRIVMSG ' + chan + ' : ' + v + "\r\n")
+    })
+  })
+}
+
 function cowsay(msg, chan){
   let str = msg.substring(8)
   exec(shellescape(('cowsay ' + str).split(' ')), (error, stdout, stderr) => {
@@ -160,7 +169,7 @@ function addTrackByYTID(videoID, chan){
       let minutes = res[5].length == 1 ? '0' + res[5] : res[5]
       let seconds = res[6].length == 1 ? '0' + res[6] : res[6]
       let thumbnail = res[7]
-      exec(command = 'curl -s https://shorty.dweet.net/shorty.php?https://audiobot.dweet.net/'+fixedEncodeURIComponent(chan.split('').filter(v=>v!='#').join(''))+'/t/' + fixedEncodeURIComponent(res[1]), (error, stdout, stderr)=>{
+      exec(command = 'curl -s https://shorty.rotoblaster.com/shorty.php?https://audiobot.rotoblaster.com/'+fixedEncodeURIComponent(chan.split('').filter(v=>v!='#').join(''))+'/t/' + fixedEncodeURIComponent(res[1]), (error, stdout, stderr)=>{
         if (error) {
           console.log(command)
           console.log(`error: ${error.message}`)
@@ -173,8 +182,8 @@ function addTrackByYTID(videoID, chan){
         }
         if(stdout){
           console.log(stdout+"\n")
-          let playlistPage = "https://audiobot.dweet.net/" + fixedEncodeURIComponent(chan.split('').filter(v=>v!='#').join(''))
-          let shortLink = 'https://shorty.dweet.net/' + stdout.split("\n")[0]
+          let playlistPage = "https://audiobot.rotoblaster.com/" + fixedEncodeURIComponent(chan.split('').filter(v=>v!='#').join(''))
+          let shortLink = 'https://shorty.rotoblaster.com/' + stdout.split("\n")[0]
           let duration = 'duration: ' + hours + ':' + minutes + ':' + seconds
           let send = shortLink + ' <- audio only for "' + trackTitle + "\" " + '[ https://youtu.be/'+videoID+' ]'
           serverRaw('PRIVMSG ' + chan + ' :' + send + "\r\n")
@@ -201,7 +210,7 @@ async function imgToAscii(img, chan){
           width,
           height
         }
-        const response = await fetch('https://audiobot.dweet.net/imgToAscii.php', {
+        const response = await fetch('https://audiobot.rotoblaster.com/imgToAscii.php', {
           method: 'post',
           body: JSON.stringify(sendData),
           headers: {'Content-Type': 'application/json'}
@@ -221,7 +230,7 @@ async function imgToAscii(img, chan){
 
 function queueTrack(searchString, chan, nickname){
   let command
-  exec(command = 'curl -s \'https://audiobot.dweet.net/autoSearch.php?sparam=' + fixedEncodeURIComponent(searchString.replaceAll("'", '')) + "'", (error, stdout, stderr)=>{
+  exec(command = 'curl -s \'https://audiobot.rotoblaster.com/autoSearch.php?sparam=' + fixedEncodeURIComponent(searchString.replaceAll("'", '')) + "'", (error, stdout, stderr)=>{
     if (error) {
       console.log('error')
       console.log(command)
@@ -253,7 +262,7 @@ function queueTrack(searchString, chan, nickname){
 var queue = ''
 function queueShortLink(url, chan, extraText){
 
-  exec('curl -s \'https://shorty.dweet.net/shorty.php?' + (url.split(':http').join('http'))+"'", (error, stdout, stderr)=>{
+  exec('curl -s \'https://shorty.rotoblaster.com/shorty.php?' + (url.split(':http').join('http'))+"'", (error, stdout, stderr)=>{
     if (error) {
       console.log(`error: ${error.message}`)
       return
@@ -263,7 +272,7 @@ function queueShortLink(url, chan, extraText){
       return
     }
     if(stdout){
-      let shortLink = 'https://shorty.dweet.net/' + stdout.split("\n")[0] + extraText
+      let shortLink = 'https://shorty.rotoblaster.com/' + stdout.split("\n")[0] + extraText
       let send = shortLink
                         queue = 'PRIVMSG ' + chan + ' :' + send + "\r\n"
     }
@@ -277,7 +286,7 @@ function invokeQueue(url, chan, extraText){
 
 function makeShortLink(url, chan, extraText){
   var command
-  exec(command = "curl -s 'https://shorty.dweet.net/shorty.php?" + (url.split(':http').join('http'))+"'", (error, stdout, stderr)=>{
+  exec(command = "curl -s 'https://shorty.rotoblaster.com/shorty.php?" + (url.split(':http').join('http'))+"'", (error, stdout, stderr)=>{
     if (error) {
       console.log('error')
       console.log(command)
@@ -292,7 +301,7 @@ function makeShortLink(url, chan, extraText){
     }
     if(stdout){
       console.log(command)
-      let shortLink = 'https://shorty.dweet.net/' + stdout.split("\n")[0] + extraText
+      let shortLink = 'https://shorty.rotoblaster.com/' + stdout.split("\n")[0] + extraText
       let send = shortLink
       serverRaw('PRIVMSG ' + chan + ' :' + send + "\r\n")
     }
@@ -301,7 +310,7 @@ function makeShortLink(url, chan, extraText){
 
 function makeDemoLink(code, chan, extraText){
   var command
-  exec(command = "cd /var/www/html/dweet.net/; php dweet.php '" + code.replaceAll("'", "`") + "'", (error, stdout, stderr)=>{
+  exec(command = "cd /var/www/html/dweet.rotoblaster.com/; php dweet.php '" + code.replaceAll("'", "`") + "'", (error, stdout, stderr)=>{
     if (error) {
       console.log('error')
       console.log(command)
@@ -316,7 +325,7 @@ function makeDemoLink(code, chan, extraText){
     }
     if(stdout){
       console.log(command)
-      let shortLink = 'https://dweet.net/' + stdout.split("\n")[0] + extraText
+      let shortLink = 'https://dweet.rotoblaster.com/' + stdout.split("\n")[0] + extraText
       let send = shortLink
       serverRaw('PRIVMSG ' + chan + ' :' + send + "\r\n")
     }
@@ -382,7 +391,7 @@ function Connect(port) {
                                   if(chatter) chatter=chatter.split('!')[0]
                                   if(!msg) return
                                   if(!msg.split(':').length || (msg.split(':').length>1 && msg.split(':')[1].split('!')[0].indexOf('audiobot')!==-1)) return
-                                  let txtmsg = message[1]
+                                  let txtmsg = message[1].split('').filter(v=>v.charCodeAt(0)!==160).join('')
                                   let dotCommand = txtmsg.indexOf('.') == 0 ? txtmsg.toLowerCase().split('.')[1].split(' ')[0] : ''
                                   let l=false
 
@@ -398,8 +407,12 @@ function Connect(port) {
                                     dotCommand == 'demo' ||
                                     dotCommand == 'hint' ||
                                     dotCommand == 'd' ||
+                                    dotCommand == 'part' ||
+                                    dotCommand == 'leave' ||
+                                    dotCommand == 'join' ||
                                     dotCommand == 'shim' ||
                                     dotCommand == 'play' ||
+                                    dotCommand == 'whr' ||
                                     dotCommand == 'superimpose' ||
                                     dotCommand == 'emphasize' ||
                                     dotCommand == 'last' ||
@@ -409,20 +422,43 @@ function Connect(port) {
                                     dotCommand == 'vignette'){
                                     let turl = txtmsg.split(' ').length && txtmsg.split(' '). length > 1 ? txtmsg.split(' ')[1] : ''
                                     switch(dotCommand){
+                                      case 'part':
+                                        if(chatter.toLowerCase()==='cantelope' || chatter.toLowerCase()==='c4ntelope'){
+                                          serverRaw('PART ' + (turl?turl:chan) + "\r\n")
+                                          if(turl) chans=chans.filter(v=>v!=turl.trim())
+                                        }
+																				return
+                                      case 'leave':
+                                        if(chatter.toLowerCase()==='cantelope' || chatter.toLowerCase()==='c4ntelope'){
+                                          serverRaw('PART ' + (turl?turl:chan) + "\r\n")
+                                          if(turl) chans=chans.filter(v=>v!=turl.trim())
+                                        }
+																				return
+                                      case 'join':
+                                        if(chatter.toLowerCase()==='cantelope' || chatter.toLowerCase()==='c4ntelope'){
+																					serverRaw('JOIN ' + turl + "\r\n")
+                                          if(turl && chans.filter(v=>v.toUpperCase() == turl.trim().toUpperCase()).length==0) chans=[...chans, turl.trim()]
+                                        }
+                                        return
+                                      break
+                                      case 'whr':
+                                        whr(txtmsg, chan)
+                                        return
+                                      break
                                       case 'cowsay':
                                         cowsay(txtmsg, chan)
                                         return
                                       break
                                       case 'wavevid':
-                                        makeShortLink('https://efx.dweet.net/' + turl + (txtmsg.indexOf('?')==-1 ? '?' : '&') + 'wavey', chan, " <- wavy version :D")
+                                        makeShortLink('https://efx.rotoblaster.com/' + turl + (txtmsg.indexOf('?')==-1 ? '?' : '&') + 'wavey', chan, " <- wavy version :D")
                                         return
                                       break
                                       case 'superimpose':
-                                        makeShortLink('https://superimpose.dweet.net/' + turl, chan, " <- superimposed :D")
+                                        makeShortLink('https://superimpose.rotoblaster.com/' + turl, chan, " <- superimposed :D")
                                         return
                                       break
                                       case 'wavey':
-                                        makeShortLink('https://efx.dweet.net/' + turl + (txtmsg.indexOf('?')==-1 ? '?' : '&') + 'wavey', chan, " <- wavy version :D")
+                                        makeShortLink('https://efx.rotoblaster.com/' + turl + (txtmsg.indexOf('?')==-1 ? '?' : '&') + 'wavey', chan, " <- wavy version :D")
                                         return
                                       break
                                       case 'scramble':
@@ -438,19 +474,19 @@ function Connect(port) {
                                         return
                                       break
                                       case 'wavepic':
-                                        makeShortLink('https://efx.dweet.net/' + turl + (txtmsg.indexOf('?')==-1 ? '?' : '&') + 'wavey', chan, " <- wavy version :D")
+                                        makeShortLink('https://efx.rotoblaster.com/' + turl + (txtmsg.indexOf('?')==-1 ? '?' : '&') + 'wavey', chan, " <- wavy version :D")
                                         return
                                       break
                                       case 'vignette':
-                                        makeShortLink('https://efx.dweet.net/' + turl + (txtmsg.indexOf('?')==-1 ? '?' : '&') + 'vignette', chan, " <- vignette")
+                                        makeShortLink('https://efx.rotoblaster.com/' + turl + (txtmsg.indexOf('?')==-1 ? '?' : '&') + 'vignette', chan, " <- vignette")
                                         return
                                       break
                                       case 'emphasize':
-                                        makeShortLink('https://emphasis.dweet.net/' +  fixedEncodeURIComponent(txtmsg.substring(11).substr(0, 250).replaceAll("'", "")), chan, " <- emphasis :D")
+                                        makeShortLink('https://emphasis.rotoblaster.com/' +  fixedEncodeURIComponent(txtmsg.substring(11).substr(0, 250).replaceAll("'", "")), chan, " <- emphasis :D")
                                         return
                                       break
                                       case 'play':
-                                        queueTrack(txtmsg.substring(3), chan, chatter)
+                                        queueTrack(txtmsg.substring(6), chan, chatter)
                                         return
                                       break
                                       case 'd':
@@ -462,20 +498,20 @@ function Connect(port) {
                                         return
                                       break
                                       case 'ascii':
-                                        //makeShortLink('https://ascii.dweet.net/' + turl, chan, " <- ascii")
+                                        //makeShortLink('https://ascii.rotoblaster.com/' + turl, chan, " <- ascii")
                                         imgToAscii(turl, chan)
                                         return
                                       break
                                       case 'scanlines':
-                                        makeShortLink('https://efx.dweet.net/' + turl + (txtmsg.indexOf('?')==-1 ? '?' : '&') + 'scanlines', chan, " <- scanlines")
+                                        makeShortLink('https://efx.rotoblaster.com/' + turl + (txtmsg.indexOf('?')==-1 ? '?' : '&') + 'scanlines', chan, " <- scanlines")
                                         return
                                       break
                                       case 'matrix':
-                                        makeShortLink('https://efx.dweet.net/' + turl + (txtmsg.indexOf('?')==-1 ? '?' : '&') + 'matrix', chan, " <- matrix")
+                                        makeShortLink('https://efx.rotoblaster.com/' + turl + (txtmsg.indexOf('?')==-1 ? '?' : '&') + 'matrix', chan, " <- matrix")
                                         return
                                       break
                                       case 'twirl':
-                                        makeShortLink('https://efx.dweet.net/' + turl + (txtmsg.indexOf('?')==-1 ? '?' : '&') + 'twirl', chan, " <- twirl")
+                                        makeShortLink('https://efx.rotoblaster.com/' + turl + (txtmsg.indexOf('?')==-1 ? '?' : '&') + 'twirl', chan, " <- twirl")
                                         return
                                       break
                                       case 'last':
@@ -483,15 +519,15 @@ function Connect(port) {
                                         return
                                       break
                                       case 'efx':
-                                        makeShortLink('https://efx.dweet.net/' + turl, chan, " <- efx")
+                                        makeShortLink('https://efx.rotoblaster.com/' + turl, chan, " <- efx")
                                         return
                                       break
                                     }
                                   } else { // auto stuff
                                     msg.split(' ').map((v,i)=>{
-                                      if(v.indexOf('https://wavepic')==-1 && v.indexOf('https://efx')==-1 && v.toLowerCase().indexOf('https://')!== -1 && (v.toLowerCase().indexOf('.jpg')!==-1 || v.toLowerCase().indexOf('.png')!==-1 || v.toLowerCase().indexOf('.gif')!==-1 || v.toLowerCase().indexOf('/preview')!==-1 || v.toLowerCase().indexOf('.webm')!==-1 || v.toLowerCase().indexOf('.mp4')!==-1)){
-                                        //console.log('https://efx.dweet.net/' + v + '?wavey', chan, " <- wavy version :D")
-                                        queueShortLink('https://efx.dweet.net/' + v + '?wavey', chan, " <- wavy version :D")
+                                      if(v.indexOf('https://wavepic')==-1 && v.indexOf('https://efx')==-1 && v.toLowerCase().indexOf('https://')!== -1 && (v.toLowerCase().indexOf('.jpg')!==-1 || v.toLowerCase().indexOf('.png')!==-1 || v.toLowerCase().indexOf('.gif')!==-1 || v.toLowerCase().indexOf('/preview')!==-1 || v.toLowerCase().indexOf('/drawforme')!==-1 || v.toLowerCase().indexOf('.webm')!==-1 || v.toLowerCase().indexOf('.mp4')!==-1)){
+                                        //console.log('https://efx.rotoblaster.com/' + v + '?wavey', chan, " <- wavy version :D")
+                                        queueShortLink('https://efx.rotoblaster.com/' + v + '?wavey', chan, " <- wavy version :D")
                                         return
                                       }
                                     })
@@ -504,7 +540,7 @@ function Connect(port) {
                                     )){
 
                                       let sendData = {playlist: chan.split('').filter(v=>v!=='#').join('')}
-                                      const response = await fetch('https://audiobot.dweet.net/create.php', {
+                                      const response = await fetch('https://audiobot.rotoblaster.com/create.php', {
                                         method: 'post',
                                         body: JSON.stringify(sendData),
                                         headers: {'Content-Type': 'application/json'}

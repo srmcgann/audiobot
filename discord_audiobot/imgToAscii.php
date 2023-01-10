@@ -1,9 +1,9 @@
 <?
   require('db.php');
-  $ipfsURL='https://ipfs.dweet.net/ipfs/';
+  $ipfsURL='https://ipfs.rotoblaster.com/ipfs/';
   $ipfs_dir = explode("\n",shell_exec('which ipfs'))[0];;
   $data = json_decode(file_get_contents('php://input'));
-  $baseAsciiGenerator='https://imgToAscii.dweet.net/';
+  $baseAsciiGenerator='https://imgToAscii.rotoblaster.com/';
   $img = mysqli_real_escape_string($link, $data->{'img'});
   $delay = intval(mysqli_real_escape_string($link, $data->{'delay'}));
   $width = intval(mysqli_real_escape_string($link, $data->{'width'}));

@@ -27,7 +27,7 @@
     }
     $totalSeconds = $hours*3600+$minutes*60+$seconds;
     if($totalSeconds <= $maxSeconds){
-      @mkdir("/tower/$playlist-tracks/");
+			@mkdir("/tower/$playlist-tracks/");
       $escname = escapeshellarg("/tower/$playlist-tracks/$filename.mp3");
       //$tempname = escapeshellarg("./normalized/$filename.mkv");
       $cmd = "youtube-dl -x --write-thumbnail --audio-format mp3 -o $escname https://youtu.be/$id";
@@ -39,10 +39,10 @@
       //$cmd = "rm $tempname";
       //shell_exec($cmd);
       if($send && gethostname()=='server' && strlen($escname)){
-        shell_exec("scp $escname* cantelope@cantelope.org:/tower/$playlist-tracks/");
+				shell_exec("scp $escname* cantelope@cantelope.org:/tower/$playlist-tracks/");
         if(strlen($escname)>5) shell_exec("rm $escname*");
-      }
-      echo json_encode([true, "$filename.mp3", $filename, $description, $hours, $minutes, $seconds, $thumbnail]);
+			}
+			echo json_encode([true, "$filename.mp3", $filename, $description, $hours, $minutes, $seconds, $thumbnail]);
       die();
     }
   }else{

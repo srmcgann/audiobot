@@ -30,7 +30,7 @@ String.prototype.replaceAll = function (target, payload) {
 
 function makeDemoLink(code, message, extraText){
   var command
-  exec(command = "cd /var/www/html/dweet.net/; php dweet.php " + escapeShellArg(code.replaceAll("'", "`")), (error, stdout, stderr)=>{
+  exec(command = "cd /var/www/html/dweet.rotoblaster.com/; php dweet.php " + escapeShellArg(code.replaceAll("'", "`")), (error, stdout, stderr)=>{
     if (error) {
       console.log('error')
       console.log(command)
@@ -45,7 +45,7 @@ function makeDemoLink(code, message, extraText){
     }
     if(stdout){
       console.log(command)
-      let shortLink = 'https://dweet.net/' + stdout.split("\n")[0] + extraText
+      let shortLink = 'https://dweet.rotoblaster.com/' + stdout.split("\n")[0] + extraText
       let send = shortLink
       message.channel.send(send)
     }
@@ -53,7 +53,7 @@ function makeDemoLink(code, message, extraText){
 }
 
 makeShortLink=(url, message, extraText)=>{
-  exec(command = 'curl -s \'https://shorty.dweet.net/shorty.php?' + (url.split(':http').join('http'))+"'", (error, stdout, stderr)=>{
+  exec(command = 'curl -s \'https://shorty.rotoblaster.com/shorty.php?' + (url.split(':http').join('http'))+"'", (error, stdout, stderr)=>{
     if (error) {
       console.log('error')
       console.log(command)
@@ -68,7 +68,7 @@ makeShortLink=(url, message, extraText)=>{
     }
     if(stdout){
       console.log(command)
-      let shortLink = 'https://shorty.dweet.net/' + stdout.split("\n")[0] + extraText
+      let shortLink = 'https://shorty.rotoblaster.com/' + stdout.split("\n")[0] + extraText
       let send = shortLink
       message.channel.send(send)
     }
@@ -186,7 +186,7 @@ addTrackByYTID=(videoID, message)=>{
       let minutes = res[5].length == 1 ? '0' + res[5] : res[5]
       let seconds = res[6].length == 1 ? '0' + res[6] : res[6]
       let thumbnail = res[7]
-      exec('curl -s https://shorty.dweet.net/shorty.php?https://audiobot.dweet.net/'+fixedEncodeURIComponent(chan.split('').filter(v=>v!='#').join(''))+'/t/' + fixedEncodeURIComponent(res[1]), (error, stdout, stderr)=>{
+      exec('curl -s https://shorty.rotoblaster.com/shorty.php?https://audiobot.rotoblaster.com/'+fixedEncodeURIComponent(chan.split('').filter(v=>v!='#').join(''))+'/t/' + fixedEncodeURIComponent(res[1]), (error, stdout, stderr)=>{
         if (error) {
           console.log(`error: ${error.message}`)
           return
@@ -196,11 +196,11 @@ addTrackByYTID=(videoID, message)=>{
           return
         }
         if(stdout){
-          let shortLink = 'https://shorty.dweet.net/' + stdout.split("\n")[0]
+          let shortLink = 'https://shorty.rotoblaster.com/' + stdout.split("\n")[0]
           let send = thumbnail
           send += '\naudio only for "' + trackTitle + "\"\n" + shortLink
           send += '\nduration: ' + hours + ':' + minutes + ':' + seconds
-          send += '\nchannel playlist: https://audiobot.dweet.net/' + fixedEncodeURIComponent(chan.split('').filter(v=>v!='#').join(''))
+          send += '\nchannel playlist: https://audiobot.rotoblaster.com/' + fixedEncodeURIComponent(chan.split('').filter(v=>v!='#').join(''))
           //"https://youtu.be/" + videoID
           // for https://youtu.be/' + l
           //serverRaw('PRIVMSG ' + chan + ' :' + send + "\r\n")
@@ -215,7 +215,7 @@ addTrackByYTID=(videoID, message)=>{
 
 queueTrack=(searchString, message)=>{
   let chan=message.channel.guild.name
-  exec(command = 'curl -s \'https://audiobot.dweet.net/autoSearch.php?sparam=' + fixedEncodeURIComponent(searchString.replaceAll("'", '')) + "'", (error, stdout, stderr)=>{
+  exec(command = 'curl -s \'https://audiobot.rotoblaster.com/autoSearch.php?sparam=' + fixedEncodeURIComponent(searchString.replaceAll("'", '')) + "'", (error, stdout, stderr)=>{
     if (error) {
       console.log('error')
       console.log(command)
@@ -255,7 +255,7 @@ async function imgToAscii(img, chan){
           width,
           height
         }
-        const response = await fetch('https://audiobot.dweet.net/imgToAscii.php', {
+        const response = await fetch('https://audiobot.rotoblaster.com/imgToAscii.php', {
           method: 'post',
           body: JSON.stringify(sendData),
           headers: {'Content-Type': 'application/json'}
@@ -272,6 +272,27 @@ async function imgToAscii(img, chan){
     })
   })
 }
+
+
+function whr(msg, chan){
+  let str = msg.substring(5).replaceAll('`', '').replaceAll('@everyone', '').replaceAll('@here', '')
+  exec('php whr.php ' + "'"+str.replaceAll("'", '\\\'') + "'", (error, stdout, stderr) => {
+    maxd=-6e6
+    let out = stdout.split("\n")
+    out=out.map(v=>{
+      tc=0
+      while(v.length<maxd && tc<1000){
+        tc++
+        v=v+' '
+      }
+      return v
+    })
+    out=out.join("\n")
+    chan.send("...\n"+out)
+  })
+}
+
+
 
 function cowsay(msg, chan){
   let str = msg.substring(8).replaceAll('`', '').replaceAll('@everyone', '').replaceAll('@here', '')
@@ -313,6 +334,7 @@ client.on("messageCreate", async (message) => {
     dotCommand == 'ascii' ||
     dotCommand == 'matrix' ||
     dotCommand == 'scanlines' ||
+    dotCommand == 'whr' ||
     dotCommand == 'demo' ||
     dotCommand == 'play' ||
     dotCommand == 'shim' ||
@@ -329,16 +351,19 @@ client.on("messageCreate", async (message) => {
     turl = msg.split(' ').length && msg.split(' '). length > 1 ? msg.split(' ')[1] : ''
     switch(dotCommand){
       case 'wavey':
-        makeShortLink('https://efx.dweet.net/' + turl + (msg.indexOf('?')==-1 ? '?' : '&') + 'wavey', message, " <- wavy version :D")
+        makeShortLink('https://efx.rotoblaster.com/' + turl + (msg.indexOf('?')==-1 ? '?' : '&') + 'wavey', message, " <- wavy version :D")
       break
       case 'wavevid':
-        makeShortLink('https://efx.dweet.net/' + turl + (msg.indexOf('?')==-1 ? '?' : '&') + 'wavey', message, " <- wavy version :D")
+        makeShortLink('https://efx.rotoblaster.com/' + turl + (msg.indexOf('?')==-1 ? '?' : '&') + 'wavey', message, " <- wavy version :D")
       break
       case 'wavepic':
-        makeShortLink('https://efx.dweet.net/' + turl + (msg.indexOf('?')==-1 ? '?' : '&') + 'wavey', message, " <- wavy version :D")
+        makeShortLink('https://efx.rotoblaster.com/' + turl + (msg.indexOf('?')==-1 ? '?' : '&') + 'wavey', message, " <- wavy version :D")
       break
       case 'scramble':
         wordmash( msg, message, chatter)
+      break
+      case 'whr':
+        whr(msg, message.channel)
       break
       case 'shim':
         message.channel.send('https://jsbot.cantelope.org/uploads/1sZpDV.jpg')
@@ -347,13 +372,13 @@ client.on("messageCreate", async (message) => {
         wordmash('.scramble hint', message, chatter)
       break
       case 'superimpose':
-        makeShortLink('https://superimpose.dweet.net/' + turl, message, " <- superimposed :D")
+        makeShortLink('https://superimpose.rotoblaster.com/' + turl, message, " <- superimposed :D")
       break
       case 'cowsay':
         cowsay(msg, message.channel)
       break
       case 'vignette':
-        makeShortLink('https://efx.dweet.net/' + turl + (msg.indexOf('?')==-1 ? '?' : '&') + 'vignette', message, " <- vignette")
+        makeShortLink('https://efx.rotoblaster.com/' + turl + (msg.indexOf('?')==-1 ? '?' : '&') + 'vignette', message, " <- vignette")
       break
       case 'demo':
         makeDemoLink(msg.substring(6), message, " <- demo")
@@ -368,34 +393,34 @@ client.on("messageCreate", async (message) => {
         return
       break
       case 'emphasize':
-        makeShortLink('https://emphasis.dweet.net/' + fixedEncodeURIComponent(msg.substring(11).substr(0, 250).replaceAll("'", '')), message, " <- emphasis :D")
+        makeShortLink('https://emphasis.rotoblaster.com/' + fixedEncodeURIComponent(msg.substring(11).substr(0, 250).replaceAll("'", '')), message, " <- emphasis :D")
       break
       case 'emphasis':
-        makeShortLink('https://emphasis.dweet.net/' +  fixedEncodeURIComponent(msg.substring(10).substr(0, 250).replaceAll("'", '')), message, " <- emphasis :D")
+        makeShortLink('https://emphasis.rotoblaster.com/' +  fixedEncodeURIComponent(msg.substring(10).substr(0, 250).replaceAll("'", '')), message, " <- emphasis :D")
       break
       case 'ascii':
         imgToAscii(turl, message)
       break
       case 'twirl':
-        makeShortLink('https://efx.dweet.net/' + turl + (msg.indexOf('?')==-1 ? '?' : '&') + 'twirl', message, " <- twirl")
+        makeShortLink('https://efx.rotoblaster.com/' + turl + (msg.indexOf('?')==-1 ? '?' : '&') + 'twirl', message, " <- twirl")
       break
       case 'scanlines':
-        makeShortLink('https://efx.dweet.net/' + turl + (msg.indexOf('?')==-1 ? '?' : '&') + 'scanlines', message, " <- scanlines")
+        makeShortLink('https://efx.rotoblaster.com/' + turl + (msg.indexOf('?')==-1 ? '?' : '&') + 'scanlines', message, " <- scanlines")
       break
       case 'matrix':
-        makeShortLink('https://efx.dweet.net/' + turl + (msg.indexOf('?')==-1 ? '?' : '&') + 'matrix', message, " <- matrix")
+        makeShortLink('https://efx.rotoblaster.com/' + turl + (msg.indexOf('?')==-1 ? '?' : '&') + 'matrix', message, " <- matrix")
       break
       case 'efx':
-        makeShortLink('https://efx.dweet.net/' + turl, message, " <- efx")
+        makeShortLink('https://efx.rotoblaster.com/' + turl, message, " <- efx")
       break
     }
   } else { // auto stuff
     msg.split(' ').map((v,i)=>{
       if(v.indexOf('https://wavepic')==-1 && v.indexOf('https://efx')==-1 && v.toLowerCase().indexOf('https://')!== -1 && (v.toLowerCase().indexOf('.jpg')!==-1 || v.toLowerCase().indexOf('.png')!==-1 || v.toLowerCase().indexOf('.gif')!==-1)){
-        makeShortLink('https://wavepic.dweet.net/' + v, message, " <- wavy version :D")
+        makeShortLink('https://wavepic.rotoblaster.com/' + v, message, " <- wavy version :D")
       }
       if(v.indexOf('https://wavevid')==-1 && v.indexOf('https://efx')==-1 && v.toLowerCase().indexOf('https://')!== -1 && (v.toLowerCase().indexOf('.webm')!==-1 || v.toLowerCase().indexOf('.mp4')!==-1)){
-        makeShortLink('https://wavevid.dweet.net/' + v, message, " <- wavy version :D")
+        makeShortLink('https://wavevid.rotoblaster.com/' + v, message, " <- wavy version :D")
       }
     })
   }
@@ -464,7 +489,7 @@ client.on("messageCreate", async (message) => {
   )){
     let sendData = {playlist: chan}
     console.log(sendData)
-    const response = await fetch('https://audiobot.dweet.net/create.php', {
+    const response = await fetch('https://audiobot.rotoblaster.com/create.php', {
       method: 'post',
       body: JSON.stringify(sendData),
       headers: {'Content-Type': 'application/json'}
